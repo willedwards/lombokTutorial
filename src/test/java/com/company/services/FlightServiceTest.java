@@ -3,18 +3,19 @@ package com.company.services;
 import com.company.exceptions.FlightNotBookedException;
 import com.company.pojo.*;
 import com.company.remote.LegacySystem;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
 
 import static org.junit.Assert.*;
 
-
+@Slf4j
 public class FlightServiceTest {
 
     FlightService flightService = new DefaultFlightService();
-
 
     private Flight flight;
     private Passenger passenger;
@@ -22,7 +23,7 @@ public class FlightServiceTest {
     private FlightCriteria criteria;
 
     @Test
-    public void childRunsAwayFromHome_FailsDueToPassportAgeCheck() throws Exception {
+    public void childRunsAwayFromHome_FailsDueToPassportAgeCheck() {
         //given
         weHaveAValidChildWithPassport();
 
@@ -42,23 +43,7 @@ public class FlightServiceTest {
         }
     }
 
-    private void weHaveAValidChildWithPassport() {
-        Passport tommysValidPassport = Passport.builder()
-                .exactName("tommy tucker")
-                .expiryMonth(9)
-                .expiryYear(2017)
-                .dateOfBirth(LocalDate.of(2001, 11, 30))
-                .number("023456789")
-                .build();
 
-        passenger = Passenger.builder()
-                .firstname("tommy")
-                .surname("tucker")
-                .title("mr")
-                .passport(tommysValidPassport)
-                .build();
-
-    }
 
     @Test
     public void fatherCanBook_DueToPassportAgeCheck() throws Exception {
@@ -75,7 +60,40 @@ public class FlightServiceTest {
 
         //then
         assertEquals("JFK001",flightService.bookFlight(criteria));
+
+        Collection<Passenger> passengers = flightService.findAllPassengers("JFK001");
+        passengers.stream().forEach( p -> log.info(p.toString()));
+        assertTrue("JFK001",passengers.size() == 1);
+
     }
+
+    @Test
+    public void cannotBookFatherTwice() throws Exception {
+
+        //given
+        weHaveAValidAdultWithPassport();
+
+        weHaveAFlightWithSeats();
+
+        weHaveAValidCreditCard();
+
+        //when
+        weBuildTheCriteria();
+
+        //then
+        assertEquals("JFK001",flightService.bookFlight(criteria));
+        //book again
+        assertEquals("JFK001",flightService.bookFlight(criteria));
+
+        Collection<Passenger> passengers = flightService.findAllPassengers("JFK001");
+
+        passengers.stream().forEach( p -> log.info(p.toString()));
+
+        assertTrue("JFK001",passengers.size() == 1);
+
+    }
+
+
 
     private void weBuildTheCriteria() {
         criteria = FlightCriteria.builder().creditCard(creditCard)
@@ -100,6 +118,24 @@ public class FlightServiceTest {
                 .departureAirportCode("LHR")
                 .build();
 
+
+    }
+
+    private void weHaveAValidChildWithPassport() {
+        Passport tommysValidPassport = Passport.builder()
+                .exactName("tommy tucker")
+                .expiryMonth(9)
+                .expiryYear(2017)
+                .dateOfBirth(LocalDate.of(2001, 11, 30))
+                .number("023456789")
+                .build();
+
+        passenger = Passenger.builder()
+                .firstname("tommy")
+                .surname("tucker")
+                .title("mr")
+                .passport(tommysValidPassport)
+                .build();
 
     }
 

@@ -1,16 +1,18 @@
 package com.company.services;
 
-import com.company.exceptions.CreditCardException;
 import com.company.exceptions.FlightNotBookedException;
-import com.company.pojo.CreditCard;
 import com.company.pojo.FlightCriteria;
+import com.company.pojo.Passenger;
 import com.company.remote.DefaultLegacySystem;
 import com.company.remote.FlightDetails;
 import com.company.remote.LegacySystem;
 
+import java.util.*;
+
 public class DefaultFlightService implements FlightService {
 
     final LegacySystem legacySystem = new DefaultLegacySystem();
+    final Set<Passenger> passengers = new HashSet<>();
 
     @Override
     public String bookFlight(final FlightCriteria flightCriteria) throws FlightNotBookedException {
@@ -21,39 +23,30 @@ public class DefaultFlightService implements FlightService {
             throw new FlightNotBookedException("flight not found");
         }
 
+        Passenger passenger = flightCriteria.getPassenger();
         if(flightDetails.getSeatsAvailable() == 0){
             throw new FlightNotBookedException("no seats left!");
         }
 
-        if(!flightCriteria.getPassenger().isAdult()){
+        if(!passenger.isAdult()){
             throw new FlightNotBookedException("an adult must book the flight");
         }
 
-        try {
-            takePayment(flightCriteria.getCreditCard());
-        }catch(CreditCardException e){
-            throw new FlightNotBookedException(e.getMessage());
-        }
-
         if(flightCriteria.getFlight().getCode().equals("LHR2JFK1")){
+            passengers.add(passenger);
             return "JFK001";
-        }
-
-        if(flightCriteria.getFlight().getCode().equals("LHR2JFK2")){
-            return "JFK002";
-        }
-
-        if(flightCriteria.getFlight().getCode().equals("LHRBEG")){
-            return "BEG980";
         }
 
         throw new FlightNotBookedException("contact support");
     }
 
-    private void takePayment(CreditCard creditCard) throws CreditCardException {
-        //payment provider autowired in
-        if((creditCard.getExpiryMonth() < 7) && (creditCard.getExpiryYear() < 2017)){
-            throw new CreditCardException("card has expired");
+    @Override
+    public Collection<Passenger> findAllPassengers(String flightCode) {
+        if(flightCode.equals("JFK001")){
+            return passengers;
         }
+        return Collections.EMPTY_SET;
     }
+
+
 }
