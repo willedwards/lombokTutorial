@@ -2,124 +2,95 @@ package com.company.services;
 
 import com.company.exceptions.FlightNotBookedException;
 import com.company.pojo.*;
-import com.company.remote.LegacySystem;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.theories.suppliers.TestedOn;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 
 public class FlightServiceTest {
 
     FlightService flightService = new DefaultFlightService();
 
+    Flight flight = new Flight();
 
-    private Flight flight;
-    private Passenger passenger;
-    private CreditCard creditCard;
-    private FlightCriteria criteria;
+    CreditCard validCreditCard;
+
+    @Before
+    public void before() {
+        flight.setArrival(LocalDateTime.of(2017, 12, 31, 0, 0));
+        flight.setDeparture(LocalDateTime.of(2017, 12, 30, 20, 30));
+        flight.setArrivalAirportCode("JFK");
+        flight.setCode("LHR2JFK1");
+        flight.setDepartureAirportCode("LHR");
+
+        validCreditCard = new CreditCard("123456789123456".getBytes(), 11, 2017, 123, "Mr R Tucker");
+
+    }
 
     @Test
-    public void childRunsAwayFromHome_FailsDueToPassportAgeCheck() throws Exception {
+    public void childRunsAwayFromHome_FailsDueToPassportAgeCheck()  {
+
         //given
-        weHaveAValidChildWithPassport();
+        Passport tommysValidPassport = new Passport("023456789", 11, 2017, "Tommy Tucker",
+                LocalDate.of(1978, 1, 3));
 
-        weHaveAFlightWithSeats();
 
-        weHaveAValidCreditCard();
+        Passenger tommy = new Passenger("mr", "tommy", "tucker", true, tommysValidPassport);
+
 
         //when
-        weBuildTheCriteria();
+        FlightCriteria criteria = new FlightCriteria(tommy, flight, validCreditCard);
 
         //then
-        try {
+       try {
             flightService.bookFlight(criteria);
-            fail();
         } catch (FlightNotBookedException e) {
             assertEquals("an adult must book the flight", e.getMessage());
         }
     }
 
-    private void weHaveAValidChildWithPassport() {
-        Passport tommysValidPassport = Passport.builder()
-                .exactName("tommy tucker")
-                .expiryMonth(9)
-                .expiryYear(2017)
-                .dateOfBirth(LocalDate.of(2001, 11, 30))
-                .number("023456789")
-                .build();
 
-        passenger = Passenger.builder()
-                .firstname("tommy")
-                .surname("tucker")
-                .title("mr")
-                .passport(tommysValidPassport)
-                .build();
+    @Test
+    public void fatherCanBook_DueToPassportAgeCheck() throws FlightNotBookedException {
 
+        //given
+        Passport passport = new Passport("34456789", 3, 2018, "Ross tucker", LocalDate.of(1978, 1, 3));
+
+
+        Passenger adultPassenger = new Passenger("mr", "ross", "tucker", true, passport);
+
+        //when
+        FlightCriteria criteria = new FlightCriteria(adultPassenger, flight, validCreditCard);
+
+        //then
+        assertEquals("JFK001", flightService.bookFlight(criteria));
     }
 
     @Test
-    public void fatherCanBook_DueToPassportAgeCheck() throws Exception {
-
+    public void cannotBookFatherTwice() throws FlightNotBookedException {
         //given
-        weHaveAValidAdultWithPassport();
+        Passport passport = new Passport("34456789", 3, 2018, "Ross tucker", LocalDate.of(1978, 1, 3));
 
-        weHaveAFlightWithSeats();
 
-        weHaveAValidCreditCard();
+        Passenger adultPassenger = new Passenger("mr", "ross", "tucker", true, passport);
 
         //when
-        weBuildTheCriteria();
+        FlightCriteria criteria = new FlightCriteria(adultPassenger, flight, validCreditCard);
 
-        //then
-        assertEquals("JFK001",flightService.bookFlight(criteria));
+        //then first booking
+        assertEquals("JFK001", flightService.bookFlight(criteria));
+        assertTrue(flightService.getAllPassengers("JFK001").size() == 1);
+
+        //then second booking
+        assertEquals("JFK001", flightService.bookFlight(criteria));
+        assertTrue(flightService.getAllPassengers("JFK001").size() == 1);
     }
-
-    private void weBuildTheCriteria() {
-        criteria = FlightCriteria.builder().creditCard(creditCard)
-                .flight(flight)
-                .passenger(passenger).build();
-    }
-
-    private void weHaveAValidCreditCard() {
-        creditCard = CreditCard.builder().clearCardNumber("123456789123456".getBytes())
-                .ccv(123)
-                .expiryMonth(9)
-                .expiryYear(2019)
-                .ownersName("Mr R Tucker")
-                .build();
-    }
-
-    private void weHaveAFlightWithSeats() {
-        flight = Flight.builder().arrival(LocalDateTime.of(2017,12,31,0,0))
-                .departure(LocalDateTime.of(2017,12,30,20,30))
-                .arrivalAirportCode("JFK")
-                .code("LHR2JFK1")
-                .departureAirportCode("LHR")
-                .build();
-
-
-    }
-
-    private void weHaveAValidAdultWithPassport() {
-
-        Passport  passport = Passport.builder()
-                .exactName("Ross tucker")
-                .expiryMonth(3)
-                .expiryYear(2018)
-                .dateOfBirth(LocalDate.of(1978, 1, 3))
-                .number("34456789")
-                .build();
-
-        passenger = Passenger.builder()
-                .firstname("ross")
-                .surname("tucker")
-                .title("mr")
-                .passport(passport)
-                .build();
-    }
-
-
 }

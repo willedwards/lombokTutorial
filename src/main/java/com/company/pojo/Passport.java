@@ -1,17 +1,23 @@
 package com.company.pojo;
 
-import lombok.Builder;
-
 import java.time.LocalDate;
 
-@Builder
+
 public class Passport {
 
-    String number;
-    int expiryMonth;
-    int expiryYear;
-    String exactName;
-    LocalDate dateOfBirth;
+    public Passport(String number, int expiryMonth, int expiryYear, String exactName, LocalDate dateOfBirth) {
+        this.number = number;
+        this.expiryMonth = expiryMonth;
+        this.expiryYear = expiryYear;
+        this.exactName = exactName;
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    private final String number;
+    private final  int expiryMonth;
+    private final  int expiryYear;
+    private final  String exactName;
+    private final  LocalDate dateOfBirth;
 
     public String getNumber() {
         return this.number;
@@ -66,7 +72,4 @@ public class Passport {
         return result;
     }
 
-    public String toString() {
-        return "com.company.pojo.Passport(number=" + this.number + ", expiryMonth=" + this.expiryMonth + ", expiryYear=" + this.expiryYear + ", exactName=" + this.exactName + ", dateOfBirth=" + this.dateOfBirth + ")";
-    }
 }
