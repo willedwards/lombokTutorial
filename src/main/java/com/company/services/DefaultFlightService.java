@@ -18,7 +18,7 @@ public class DefaultFlightService implements FlightService {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultLegacySystem.class);
 
-    private final List<Passenger> passengersBookedOnLHR2JFK1 = new ArrayList<>();
+    private final Set<Passenger> passengersBookedOnLHR2JFK1 = new HashSet<>();
 
     private final LegacySystem legacySystem = new DefaultLegacySystem();
 
