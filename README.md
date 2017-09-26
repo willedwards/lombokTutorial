@@ -3,6 +3,9 @@
 ## Pre-requisites
 
  - Install lombok intellij plugin
+ 
+ - Inside intellij: Settings->Build,Execution,Deployment -> Compiler->Annotation Processors
+     tick "Enable annotation processing".
 
  - Add the following dependency to your pom.xml
  
