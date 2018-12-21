@@ -23,75 +23,113 @@ public class FlightServiceTest {
     private FlightCriteria criteria;
 
     @Test
-    public void childRunsAwayFromHome_FailsDueToPassportAgeCheck() {
-        //given
-        weHaveAValidChildWithPassport();
+    public void shouldGiveException_ifNoSeatsAvailable()  {
+        weHaveAValidAdultWithPassport();
 
-        weHaveAFlightWithSeats();
+        weHaveAFlightWithNoSeats();
 
         weHaveAValidCreditCard();
-
         //when
         weBuildTheCriteria();
 
-        //then
         try {
             flightService.bookFlight(criteria);
             fail();
-        } catch (FlightNotBookedException e) {
-            assertEquals("an adult must book the flight", e.getMessage());
+        }
+        catch(FlightNotBookedException e) {
+            //expect to get here.
         }
     }
 
 
 
-    @Test
-    public void fatherCanBook_DueToPassportAgeCheck() throws Exception {
+//    @Test(expected = FlightNotBookedException.class)
+//    public void shouldGiveException_ifChildBooksFlight() throws FlightNotBookedException {
+//        weHaveAValidChildWithPassport();
+//
+//        weHaveAFlightWithSeats();
+//
+//        weHaveAValidCreditCard();
+//
+//        //when
+//        weBuildTheCriteria();
+//
+//        flightService.bookFlight(criteria);
+//    }
 
-        //given
-        weHaveAValidAdultWithPassport();
+//    @Test
+//    public void fatherCanBook_DueToPassportAgeCheck() throws Exception {
+//
+//        //given
+//        weHaveAValidAdultWithPassport();
+//
+//        weHaveAFlightWithSeats();
+//
+//        weHaveAValidCreditCard();
+//
+//        //when
+//        weBuildTheCriteria();
+//
+//        //then
+//        assertEquals("JFK001",flightService.bookFlight(criteria));
+//
+//        Collection<Passenger> passengers = flightService.findAllPassengers("JFK001");
+//        passengers.stream().forEach( p -> log.info(p.toString()));
+//        assertTrue("JFK001",passengers.size() == 1);
+//
+//    }
 
-        weHaveAFlightWithSeats();
 
-        weHaveAValidCreditCard();
+//    @Test
+//    public void childRunsAwayFromHome_FailsDueToPassportAgeCheck() {
+//        //given
+//        weHaveAValidChildWithPassport();
+//
+//        weHaveAFlightWithSeats();
+//
+//        weHaveAValidCreditCard();
+//
+//        //when
+//        weBuildTheCriteria();
+//
+//        //then
+//        try {
+//            flightService.bookFlight(criteria);
+//            fail();
+//        } catch (FlightNotBookedException e) {
+//            assertEquals("an adult must book the flight", e.getMessage());
+//        }
+//    }
 
-        //when
-        weBuildTheCriteria();
 
-        //then
-        assertEquals("JFK001",flightService.bookFlight(criteria));
 
-        Collection<Passenger> passengers = flightService.findAllPassengers("JFK001");
-        passengers.stream().forEach( p -> log.info(p.toString()));
-        assertTrue("JFK001",passengers.size() == 1);
 
-    }
 
-    @Test
-    public void cannotBookFatherTwice() throws Exception {
-
-        //given
-        weHaveAValidAdultWithPassport();
-
-        weHaveAFlightWithSeats();
-
-        weHaveAValidCreditCard();
-
-        //when
-        weBuildTheCriteria();
-
-        //then
-        assertEquals("JFK001",flightService.bookFlight(criteria));
-        //book again
-        assertEquals("JFK001",flightService.bookFlight(criteria));
-
-        Collection<Passenger> passengers = flightService.findAllPassengers("JFK001");
-
-        passengers.stream().forEach( p -> log.info(p.toString()));
-
-        assertTrue("JFK001",passengers.size() == 1);
-
-    }
+//    @Test
+//    public void cannotBookFatherTwice() throws Exception {
+//
+//        //given
+//        weHaveAValidAdultWithPassport();
+//
+//        weHaveAFlightWithSeats();
+//
+//        weHaveAValidCreditCard();
+//
+//        //when
+//        weBuildTheCriteria();
+//
+//        //then
+//        assertEquals("JFK001",flightService.bookFlight(criteria));
+//        //book again
+//        assertEquals("JFK001",flightService.bookFlight(criteria));
+//
+//        Collection<Passenger> passengers = flightService.findAllPassengers("JFK001");
+//
+//        passengers.stream().forEach( p -> log.info(p.toString()));
+//
+//        assertTrue("JFK001",passengers.size() == 1);
+//
+//    }
 
 
 
@@ -117,8 +155,15 @@ public class FlightServiceTest {
                 .code("LHR2JFK1")
                 .departureAirportCode("LHR")
                 .build();
+    }
 
-
+    private void weHaveAFlightWithNoSeats() {
+        flight = Flight.builder().arrival(LocalDateTime.of(2017,12,31,0,0))
+                .departure(LocalDateTime.of(2017,12,30,20,30))
+                .arrivalAirportCode("INN")
+                .code("LHR2INN")
+                .departureAirportCode("LHR")
+                .build();
     }
 
     private void weHaveAValidChildWithPassport() {

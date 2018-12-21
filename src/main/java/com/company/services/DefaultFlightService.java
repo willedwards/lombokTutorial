@@ -15,29 +15,12 @@ public class DefaultFlightService implements FlightService {
     final Set<Passenger> passengers = new HashSet<>();
 
     @Override
-    public String bookFlight(final FlightCriteria flightCriteria) throws FlightNotBookedException {
+    public String bookFlight(final FlightCriteria flightCriteria)  {
 
         FlightDetails flightDetails =  legacySystem.findById(flightCriteria.getFlight().getCode());
+        Passenger passenger = null;
 
-        if(flightDetails == null){
-            throw new FlightNotBookedException("flight not found");
-        }
-
-        Passenger passenger = flightCriteria.getPassenger();
-        if(flightDetails.getSeatsAvailable() == 0){
-            throw new FlightNotBookedException("no seats left!");
-        }
-
-        if(!passenger.isAdult()){
-            throw new FlightNotBookedException("an adult must book the flight");
-        }
-
-        if(flightCriteria.getFlight().getCode().equals("LHR2JFK1")){
-            passengers.add(passenger);
-            return "JFK001";
-        }
-
-        throw new FlightNotBookedException("contact support");
+        return "mo such flight";
     }
 
     @Override

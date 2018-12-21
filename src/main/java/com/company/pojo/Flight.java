@@ -1,14 +1,14 @@
 package com.company.pojo;
 
-import lombok.Builder;
-import lombok.Value;
-
 import java.time.LocalDateTime;
 
-@Builder
-@Value
-public class Flight {
+import lombok.Builder;
+import lombok.Data;
 
+@Builder
+@Data
+public class Flight {
+    String id;
     String code;
     LocalDateTime arrival;
     LocalDateTime departure;

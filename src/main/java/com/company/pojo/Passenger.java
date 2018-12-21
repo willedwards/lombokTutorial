@@ -9,11 +9,11 @@ import java.time.LocalDate;
 @Builder
 public class Passenger {
 
-    String title;
-    String firstname;
-    String surname;
-    boolean male;
-    Passport passport;
+    private String title;
+    private String firstname;
+    private String surname;
+    private boolean male;
+    private Passport passport;
 
     public boolean isAdult(){
         //ignore time zone for simplicity
