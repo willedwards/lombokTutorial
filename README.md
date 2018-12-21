@@ -1,19 +1,16 @@
-# lombokTutorial
+# basic java maven tutorial
 
-## Pre-requisites
+ install jdk 1.8
+ install intellij
+ install maven 3.5.2 (3.3.9) is also ok.
 
- - Install lombok intellij plugin
- 
- - Inside intellij: Settings->Build,Execution,Deployment -> Compiler->Annotation Processors
-     tick "Enable annotation processing".
+ ## Aim
 
- - Add the following dependency to your pom.xml
- 
- ```
-     <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <version>1.16.18</version>
-      <scope>provided</scope>
-    </dependency>
- ```
+ To get familiar with java maven intellij, tests.
+
+
+ ### Tasks
+
+ (1) Look at FlightServiceTest and try to get the test working. Do this by adding code to DefaultFlightService::bookFlight()
+
+ Hint : this method should throw a FlightNotBookedException
